@@ -120,7 +120,22 @@ app.get('/my-events/:email', async (req, res) => {
   }
 });
 
+// ৭. ইভেন্ট আপডেট করা[cite: 6]
+app.put('/events/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updatedData = req.body;
+    delete updatedData._id; // _id ফিল্ড আপডেট করা যাবে না
 
+    const result = await eventsCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updatedData }
+    );
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ error: 'Failed to update event' });
+  }
+});
 
 
 app.listen(port, () => {
