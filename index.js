@@ -31,6 +31,33 @@ app.get('/', (req, res) => {
   res.send('Hello World! this is a hello');
 });
 
+// ১. গেট অল ইভেন্টস (Limit এবং Future Date ফিল্টার সহ)[cite: 4]
+app.get('/events', async (req, res) => {
+  try {
+    const today = new Date();
+    const limitCount = parseInt(req.query.limit) || 0;
+    
+    // শুধু ভবিষ্যতের ইভেন্টগুলো দেখাবে[cite: 4]
+    let query = eventsCollection.find({ date: { $gte: today.toISOString().split('T')[0] } }).sort({ date: 1 });
+    
+    if (limitCount > 0) {
+      query = query.limit(limitCount);
+    }
+    
+    const events = await query.toArray();
+    res.send(events);
+  } catch (error) {
+    res.status(500).send({ error: 'Failed to fetch events' });
+  }
+});
+
+
+
+
+
+
+
+
 
 
 
