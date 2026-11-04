@@ -109,7 +109,16 @@ app.get('/joined-events/:email', async (req, res) => {
   }
 });
 
-
+// ৬. ইউজারের নিজের ক্রিয়েট করা ইভেন্টগুলো দেখা (Manage Events)[cite: 6]
+app.get('/my-events/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+    const events = await eventsCollection.find({ createdBy: email }).toArray();
+    res.send(events);
+  } catch (error) {
+    res.status(500).send({ error: 'Failed to fetch user events' });
+  }
+});
 
 
 
