@@ -93,7 +93,21 @@ app.post('/join-event', async (req, res) => {
   }
 });
 
-
+// ৫. ইউজারের জয়েন করা ইভেন্টগুলো দেখা (তারিখ অনুযায়ী সর্ট করা)[cite: 6]
+app.get('/joined-events/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+    const joinedList = await joinedEventsCollection.find({ userEmail: email }).toArray();
+    
+    // ইভেন্ট আইডিগুলো সংগ্রহ করা
+    const eventIds = joinedList.map(item => new ObjectId(item.eventId));
+    const events = await eventsCollection.find({ _id: { $in: eventIds } }).sort({ date: 1 }).toArray();
+    
+    res.send(events);
+  } catch (error) {
+    res.status(500).send({ error: 'Failed to fetch joined events' });
+  }
+});
 
 
 
