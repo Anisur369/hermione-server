@@ -51,11 +51,47 @@ app.get('/events', async (req, res) => {
   }
 });
 
+// ২. নতুন ইভেন্ট ক্রিয়েট করা[cite: 2, 4]
+app.post('/events', async (req, res) => {
+  try {
+    const newEvent = req.body;
+    const result = await eventsCollection.insertOne(newEvent);
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ error: 'Failed to create event' });
+  }
+});
 
+// ৩. নির্দিষ্ট ইভেন্টের ডিটেইলস আনা[cite: 5]
+app.get('/events/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const event = await eventsCollection.findOne({ _id: new ObjectId(id) });
+    if (!event) {
+      return res.status(404).send({ error: 'Event not found' });
+    }
+    res.send(event);
+  } catch (error) {
+    res.status(400).send({ error: 'Invalid ID format' });
+  }
+});
 
-
-
-
+// ৪. ইভেন্টে জয়েন করা[cite: 5]
+app.post('/join-event', async (req, res) => {
+  try {
+    const { eventId, userEmail } = req.body;
+    const existingJoin = await joinedEventsCollection.findOne({ eventId, userEmail });
+    
+    if (existingJoin) {
+      return res.status(400).send({ message: 'You have already joined this event!' });
+    }
+    
+    const result = await joinedEventsCollection.insertOne({ eventId, userEmail });
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ error: 'Failed to join event' });
+  }
+});
 
 
 
