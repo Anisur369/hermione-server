@@ -137,6 +137,17 @@ app.put('/events/:id', async (req, res) => {
   }
 });
 
+// ৮. ইভেন্ট ডিলিট করা[cite: 6]
+app.delete('/events/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await eventsCollection.deleteOne({ _id: new ObjectId(id) });
+    await joinedEventsCollection.deleteMany({ eventId: id }); // রিলেটেড জয়েন ডাটা ডিলিট করা
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ error: 'Failed to delete event' });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
